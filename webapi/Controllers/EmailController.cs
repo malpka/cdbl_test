@@ -13,7 +13,7 @@ using webapi.Models;
 namespace webapi.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("[controller]/[action]")]
     public class EmailController : ControllerBase
     {
         private readonly ILogger<EmailController> _logger;
@@ -28,7 +28,7 @@ namespace webapi.Controllers
         }
 
 
-        [HttpPost]
+        [HttpPost(Name = nameof(Create))]
         public IActionResult Create(EmailDTO emailData)
         {
             var email =_mapper.Map<Email>(emailData);
@@ -36,7 +36,7 @@ namespace webapi.Controllers
             return Ok(email.Id);
         }
 
-        [HttpPost]
+        [HttpPost(Name = nameof(SetReceipients))]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> SetReceipients(int emailId, string recipients)
@@ -49,7 +49,7 @@ namespace webapi.Controllers
             return Ok();
         }
 
-        [HttpPost]
+        [HttpPost(Name = nameof(SetSender))]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> SetSender(int emailId, string sender)
@@ -62,11 +62,11 @@ namespace webapi.Controllers
             return Ok();
         }
 
-        // [HttpGet("{id}", Name = "CheckStatus")]
-        // public void CheckStatus(int id)
-        // {
+        [HttpGet("{id}", Name = "CheckStatus")]
+        public void CheckStatus(int id)
+        {
 
-        // }
+        }
 
         [HttpGet]
         public IEnumerable<EmailDTO> Get()
@@ -96,7 +96,7 @@ namespace webapi.Controllers
 
         // }
 
-        [HttpPost]
+        [HttpPost(Name = nameof(AddAtachment))]
         public async Task<IActionResult> AddAtachment(int emailId, string attachmentName, byte[] attachmentData)
         {
             var email = await _dbContext.Emails.FindAsync(emailId);
@@ -113,7 +113,7 @@ namespace webapi.Controllers
             return Ok();
         }
 
-        [HttpPost]
+        [HttpPost(Name = nameof(SetPrioroty))]
         public async Task<IActionResult> SetPrioroty(int emailId, int priority)
         {
             var email = await _dbContext.Emails.FindAsync(emailId);
