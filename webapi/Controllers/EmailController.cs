@@ -32,14 +32,26 @@ namespace webapi.Controllers
 
 
         [HttpPost(Name = nameof(Create))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Create(EmailDTO emailData)
         {
             var email =_mapper.Map<Email>(emailData);
             _dbContext.Emails.Add(email);
-            await _dbContext.SaveChangesAsync();
+            try
+            {
+                await _dbContext.SaveChangesAsync();
+            }
+            catch(Exception e)
+            {
+                return BadRequest(e);
+            }
             return Ok(email.Id);
         }
 
+        /// <summary>
+        /// Set email recipients
+        /// </summary>
         [HttpPost(Name = nameof(SetReceipients))]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -99,6 +111,7 @@ namespace webapi.Controllers
         }
 
         [HttpGet(Name = "SendPending")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> SendPending()
         {
             var emailsToSend =  _dbContext.Emails.Where(e => e.Status == EmailStatus.Pending).ToList();
@@ -113,8 +126,13 @@ namespace webapi.Controllers
         }
 
         [HttpPost(Name = nameof(AddAtachment))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> AddAtachment(int emailId, string attachmentName, byte[] attachmentData)
         {
+            if(attachmentData.Length > (_appSettings.Value.AttachmentMaxLength ?? 10000))
+                return BadRequest();
             var email = await _dbContext.Emails.FindAsync(emailId);
             if(email == null)
                 return NotFound();
@@ -130,6 +148,8 @@ namespace webapi.Controllers
         }
 
         [HttpPost(Name = nameof(SetPrioroty))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> SetPrioroty(int emailId, int priority)
         {
             var email = await _dbContext.Emails.FindAsync(emailId);

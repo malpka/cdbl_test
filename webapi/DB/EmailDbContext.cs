@@ -19,7 +19,8 @@ namespace webapi.Models
             modelBuilder.Entity<Email>(email =>
             {
                 email.HasKey(e => e.Id);
-                email.Property(e => e.Description).IsRequired();
+                email.Property(e => e.Body).IsRequired().HasMaxLength(10000);
+                email.Property(e => e.Subject).IsRequired().HasMaxLength(500);
                 email.HasMany(e => e.Attachments).WithOne(a => a.Email);
             });
 
@@ -27,7 +28,7 @@ namespace webapi.Models
             {
                 attachment.HasKey(t => t.Id);
                 attachment.Property(t => t.Name).IsRequired();
-                attachment.Property(t => t.Content).IsRequired();
+                attachment.Property(t => t.Content).IsRequired().HasMaxLength(10_000_000);
                 attachment.HasOne(t => t.Email).WithMany(s => s.Attachments);
             });
 

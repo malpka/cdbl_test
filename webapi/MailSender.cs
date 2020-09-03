@@ -15,22 +15,22 @@ namespace webapi
 
         public void Send(Email email)
         {
-            SmtpClient client = new SmtpClient(_appSettings.SmtpHost, _appSettings.SmtpPort);
-
+            SmtpClient client;
+            if(_appSettings.SmtpPort.HasValue)
+                client = new SmtpClient(_appSettings.SmtpHost, _appSettings.SmtpPort.Value);
+            else 
+                client = new SmtpClient(_appSettings.SmtpHost);
             MailAddress from = new MailAddress(email.Sender);
             MailAddress to = new MailAddress(email.Recipients);
 
             MailMessage message = new MailMessage(from, to);
             message.Body = email.Body;
-            // Include some non-ASCII characters in body and subject.
             message.BodyEncoding =  System.Text.Encoding.UTF8;
             message.Subject = email.Subject;
             message.SubjectEncoding = System.Text.Encoding.UTF8;
             client.Send(message);
 
-            // Clean up.
             message.Dispose();
-            Console.WriteLine("Goodbye.");
         }
 
     }
