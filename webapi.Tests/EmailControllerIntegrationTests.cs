@@ -11,7 +11,7 @@ using Xunit;
 namespace webapi.Tests
 {
     [Collection("Integration Tests")]
-    public class EmailControllerTests
+    public class EmailControllerIntegrationTests
     {
         private readonly WebApplicationFactory<Startup> _factory;
         private Email _modelEmail = null;
