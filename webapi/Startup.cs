@@ -35,6 +35,7 @@ namespace webapi
                 ServiceLifetime.Singleton);
 
             services.AddAutoMapper(typeof(Startup));
+            services.AddSwaggerGen();
 
         }
 
@@ -46,6 +47,12 @@ namespace webapi
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+            });
+
             app.UseHttpsRedirection();
 
             app.UseRouting();
@@ -56,6 +63,8 @@ namespace webapi
             {
                 endpoints.MapControllers();
             });
+
+
         }
     }
 }
