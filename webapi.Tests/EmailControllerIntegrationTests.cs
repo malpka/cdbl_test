@@ -16,7 +16,7 @@ namespace webapi.Tests
         private readonly WebApplicationFactory<Startup> _factory;
         private Email _modelEmail = null;
 
-        public EmailControllerTests(WebApplicationFactory<Startup> factory)
+        public EmailControllerIntegrationTests(WebApplicationFactory<Startup> factory)
         {
             _factory = factory;
 
