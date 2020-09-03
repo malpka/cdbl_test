@@ -79,6 +79,8 @@ namespace webapi.Controllers
         }
 
         [HttpGet("{id}", Name = "CheckStatus")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> CheckStatus(int id)
         {
             var email = await _dbContext.Emails.FindAsync(id);
@@ -88,10 +90,11 @@ namespace webapi.Controllers
         }
 
         [HttpGet]
-        public IEnumerable<EmailDTO> Get()
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public ActionResult<IEnumerable<EmailDTO>> Get()
         {
             var emails =  _dbContext.Emails.Select(e => _mapper.Map<EmailDTO>(e)).ToList();
-            return emails;
+            return Ok(emails);
         }
 
         /// <summary>

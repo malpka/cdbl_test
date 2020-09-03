@@ -24,7 +24,8 @@ namespace webapi.Tests
             _modelEmail =  new Email()
             {
                 Id = 1,
-                Description = "Email Text",
+                Body = "Email Text",
+                Subject = "Email Subject",
                 Priority = 4,
                 Sender = "sender@gmail.com",
                 Recipients = "recipient@gmail.com",
@@ -33,26 +34,6 @@ namespace webapi.Tests
             dbContext.Emails.Add(_modelEmail);
             dbContext.SaveChanges();
         }
-
-        // [Fact]
-        // public async Task GetRoot_ReturnsSuccessAndStatusUp()
-        // {
-        //     // Arrange
-        //     var client = _factory.CreateClient();
-
-        //     // Act
-        //     var response = await client.GetAsync("/");
-
-        //     // Assert
-        //     response.EnsureSuccessStatusCode();
-        //     Assert.NotNull(response.Content);
-        //     var responseObject = JsonSerializer.Deserialize<ResponseType>(
-        //         await response.Content.ReadAsStringAsync(),
-        //         new JsonSerializerOptions {PropertyNameCaseInsensitive = true});
-        //     Assert.Equal("Up", responseObject?.Status);
-        // }
-
-
 
 
          [Fact]
@@ -74,9 +55,12 @@ namespace webapi.Tests
             Assert.NotNull(_modelEmail);
             Assert.Equal(_modelEmail.Id, responseEmail.Id);
             Assert.Equal(_modelEmail.Recipients, responseEmail.Recipients);
-            Assert.Equal(_modelEmail.Description, responseEmail.Description);
+            Assert.Equal(_modelEmail.Subject, responseEmail.Subject);
+            Assert.Equal(_modelEmail.Body, responseEmail.Body);
             Assert.Equal(_modelEmail.Priority, responseEmail.Priority);
             Assert.Equal(_modelEmail.Recipients, responseEmail.Recipients);
+            Assert.Equal(_modelEmail.Sender, responseEmail.Sender);
+            Assert.Equal(_modelEmail.Status, responseEmail.Status);
         }
     }
 }
