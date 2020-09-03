@@ -6,6 +6,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using webapi.Domain;
 using webapi.DTOs;
 using webapi.Models;
@@ -19,20 +20,23 @@ namespace webapi.Controllers
         private readonly ILogger<EmailController> _logger;
         private readonly IMapper _mapper;
         private readonly EmailDbContext _dbContext;
+        private readonly IOptions<AppSettings> _appSettings;
 
-        public EmailController(ILogger<EmailController> logger, IMapper mapper, EmailDbContext dbContext)
+        public EmailController(ILogger<EmailController> logger, IMapper mapper, EmailDbContext dbContext, IOptions<AppSettings> appSettings)
         {
             _logger = logger;
             _mapper = mapper;
             _dbContext = dbContext;
+            _appSettings = appSettings;
         }
 
 
         [HttpPost(Name = nameof(Create))]
-        public IActionResult Create(EmailDTO emailData)
+        public async Task<IActionResult> Create(EmailDTO emailData)
         {
             var email =_mapper.Map<Email>(emailData);
             _dbContext.Emails.Add(email);
+            await _dbContext.SaveChangesAsync();
             return Ok(email.Id);
         }
 
@@ -63,15 +67,19 @@ namespace webapi.Controllers
         }
 
         [HttpGet("{id}", Name = "CheckStatus")]
-        public void CheckStatus(int id)
+        public async Task<IActionResult> CheckStatus(int id)
         {
-
+            var email = await _dbContext.Emails.FindAsync(id);
+            if(email == null)
+                return NotFound();
+            return Ok(email.Status);
         }
 
         [HttpGet]
         public IEnumerable<EmailDTO> Get()
         {
-            return null;
+            var emails =  _dbContext.Emails.Select(e => _mapper.Map<EmailDTO>(e)).ToList();
+            return emails;
         }
 
         /// <summary>
@@ -90,11 +98,19 @@ namespace webapi.Controllers
             return Ok(_mapper.Map<EmailDTO>(email));
         }
 
-        // [HttpGet("", Name = "SendPending")]
-        // public void SendPending()
-        // {
-
-        // }
+        [HttpGet(Name = "SendPending")]
+        public async Task<IActionResult> SendPending()
+        {
+            var emailsToSend =  _dbContext.Emails.Where(e => e.Status == EmailStatus.Pending).ToList();
+            foreach(var e in emailsToSend)
+            {
+                MailSender ms = new MailSender(_appSettings);
+                ms.Send(e);
+                e.Status = EmailStatus.Sent;
+            }
+            await _dbContext.SaveChangesAsync();
+            return Ok();
+        }
 
         [HttpPost(Name = nameof(AddAtachment))]
         public async Task<IActionResult> AddAtachment(int emailId, string attachmentName, byte[] attachmentData)
