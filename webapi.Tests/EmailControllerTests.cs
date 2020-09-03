@@ -34,52 +34,49 @@ namespace webapi.Tests
             dbContext.SaveChanges();
         }
 
-        [Fact]
-        public async Task GetRoot_ReturnsSuccessAndStatusUp()
-        {
-            // Arrange
-            var client = _factory.CreateClient();
-
-            // Act
-            var response = await client.GetAsync("/");
-
-            // Assert
-            response.EnsureSuccessStatusCode();
-            Assert.NotNull(response.Content);
-            var responseObject = JsonSerializer.Deserialize<ResponseType>(
-                await response.Content.ReadAsStringAsync(),
-                new JsonSerializerOptions {PropertyNameCaseInsensitive = true});
-            Assert.Equal("Up", responseObject?.Status);
-        }
-
-        private class ResponseType
-        {
-            public string Status { get; set; }
-        }
-
-
-        //  [Fact]
-        // public async Task GetEmail_ReturnsSuccessAndEmail()
+        // [Fact]
+        // public async Task GetRoot_ReturnsSuccessAndStatusUp()
         // {
         //     // Arrange
         //     var client = _factory.CreateClient();
 
         //     // Act
-        //     var response = await client.GetAsync("/email/1");
+        //     var response = await client.GetAsync("/");
 
         //     // Assert
         //     response.EnsureSuccessStatusCode();
         //     Assert.NotNull(response.Content);
-        //     var responseEmail = JsonSerializer.Deserialize<EmailDTO>(
+        //     var responseObject = JsonSerializer.Deserialize<ResponseType>(
         //         await response.Content.ReadAsStringAsync(),
         //         new JsonSerializerOptions {PropertyNameCaseInsensitive = true});
-        //     Assert.NotNull(responseEmail);
-        //     Assert.NotNull(_modelEmail);
-        //     Assert.Equal(_modelEmail.Id, responseEmail.Id);
-        //     Assert.Equal(_modelEmail.Recipients, responseEmail.Recipients);
-        //     Assert.Equal(_modelEmail.Description, responseEmail.Description);
-        //     Assert.Equal(_modelEmail.Priority, responseEmail.Priority);
-        //     Assert.Equal(_modelEmail.Recipients, responseEmail.Recipients);
+        //     Assert.Equal("Up", responseObject?.Status);
         // }
+
+
+
+
+         [Fact]
+        public async Task GetEmail_ReturnsSuccessAndEmail()
+        {
+            // Arrange
+            var client = _factory.CreateClient();
+
+            // Act
+            var response = await client.GetAsync("/email/get/1");
+
+            // Assert
+            response.EnsureSuccessStatusCode();
+            Assert.NotNull(response.Content);
+            var responseEmail = JsonSerializer.Deserialize<EmailDTO>(
+                await response.Content.ReadAsStringAsync(),
+                new JsonSerializerOptions {PropertyNameCaseInsensitive = true});
+            Assert.NotNull(responseEmail);
+            Assert.NotNull(_modelEmail);
+            Assert.Equal(_modelEmail.Id, responseEmail.Id);
+            Assert.Equal(_modelEmail.Recipients, responseEmail.Recipients);
+            Assert.Equal(_modelEmail.Description, responseEmail.Description);
+            Assert.Equal(_modelEmail.Priority, responseEmail.Priority);
+            Assert.Equal(_modelEmail.Recipients, responseEmail.Recipients);
+        }
     }
 }
