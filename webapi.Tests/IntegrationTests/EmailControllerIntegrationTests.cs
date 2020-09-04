@@ -36,7 +36,7 @@ namespace webapi.Tests
         }
 
 
-         [Fact]
+        [Fact]
         public async Task GetEmail_ReturnsSuccessAndEmail()
         {
             // Arrange
@@ -62,5 +62,6 @@ namespace webapi.Tests
             Assert.Equal(_modelEmail.Sender, responseEmail.Sender);
             Assert.Equal(_modelEmail.Status, responseEmail.Status);
         }
-    }
+
+    }  
 }

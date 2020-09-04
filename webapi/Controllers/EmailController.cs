@@ -91,7 +91,7 @@ namespace webapi.Controllers
 
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public ActionResult<IEnumerable<EmailDTO>> Get()
+        public IActionResult Get()
         {
             var emails =  _dbContext.Emails.Select(e => _mapper.Map<EmailDTO>(e)).ToList();
             return Ok(emails);
